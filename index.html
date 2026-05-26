@@ -1,1 +1,142 @@
-https://mainstreet-music.vercel.app
+<!DOCTYPE html>
+<html lang="et">
+<head>
+  <meta charset="UTF-8">
+  <title>MainStreet Music</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #050505;
+      color: white;
+      text-align: center;
+    }
+    .hero {
+      padding: 60px 20px;
+      background: radial-gradient(circle, #1f3d00, #050505 70%);
+    }
+    h1 {
+      font-size: 70px;
+      color: #b6ff00;
+      margin: 0;
+    }
+    h2 {
+      color: #fff;
+    }
+    .box {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #111;
+      padding: 25px;
+      border-radius: 15px;
+      border: 1px solid #b6ff00;
+    }
+    input, textarea {
+      width: 90%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      background: #b6ff00;
+      color: black;
+      border: none;
+      padding: 14px 25px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .song {
+      background: #1a1a1a;
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <h1>MSRP</h1>
+    <h2>MainStreet Party Music Suggestions</h2>
+    <p>Postita lugu, mida võiks järgmisel peol mängida.</p>
+  </div>
+
+  <div class="box">
+    <h2>Lisa oma suggestion</h2>
+
+    <input id="name" placeholder="Sinu nimi">
+    <input id="song" placeholder="Loo nimi">
+    <input id="artist" placeholder="Artist">
+    <textarea id="reason" placeholder="Miks seda mängida?"></textarea>
+
+    <br>
+    <button onclick="addSong()">Lisa lugu</button>
+  </div>
+
+  <div class="box">
+    <h2>Soovitused</h2>
+    <div id="songs"></div>
+  </div>
+
+  <script>
+    let songs = JSON.parse(localStorage.getItem("songs")) || [];
+
+    function addSong() {
+      const name = document.getElementById("name").value;
+      const song = document.getElementById("song").value;
+      const artist = document.getElementById("artist").value;
+      const reason = document.getElementById("reason").value;
+
+      if (!name || !song || !artist) {
+        alert("Täida nimi, lugu ja artist.");
+        return;
+      }
+
+      songs.push({
+        name,
+        song,
+        artist,
+        reason,
+        votes: 0
+      });
+
+      localStorage.setItem("songs", JSON.stringify(songs));
+      renderSongs();
+
+      document.getElementById("name").value = "";
+      document.getElementById("song").value = "";
+      document.getElementById("artist").value = "";
+      document.getElementById("reason").value = "";
+    }
+
+    function vote(index) {
+      songs[index].votes++;
+      localStorage.setItem("songs", JSON.stringify(songs));
+      renderSongs();
+    }
+
+    function renderSongs() {
+      const container = document.getElementById("songs");
+      container.innerHTML = "";
+
+      songs.forEach((item, index) => {
+        container.innerHTML += `
+          <div class="song">
+            <h3>${item.song} - ${item.artist}</h3>
+            <p><b>Postitas:</b> ${item.name}</p>
+            <p>${item.reason}</p>
+            <p><b>Votes:</b> ${item.votes}</p>
+            <button onclick="vote(${index})">+ Vote</button>
+          </div>
+        `;
+      });
+    }
+
+    renderSongs();
+  </script>
+
+</body>
+</html>
